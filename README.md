@@ -12,4 +12,15 @@ A WPF TextBox for entering a currency value, similar to how a cash register work
 - This control's template can be customized to change the appearance.
 - Supports data validation.
 
+## How to use
+Add a reference to `CurrencyTextBoxControl.dll` from your project, then add the following namespace to your XAML:
 
+```xaml
+xmlns:currency="clr-namespace:CurrencyTextBoxControl;assembly=CurrencyTextBoxControl"
+```
+
+Insert the control like this:
+
+```xaml
+<currency:CurrencyTextBox Number="{Binding Number}" />
+```
