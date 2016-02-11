@@ -25,6 +25,7 @@ New in version 1.2.0
 - Add support of numeric value (Stringformat N to N6) 
 
 New in version 1.1.1 
+- Add Up/Down key for change value slowly (keydown repeat for change value faster)
 - Validate MinimumValue / MaximumValue dependency properties 
 - Validate StringFormat dependency property 
 
