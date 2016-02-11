@@ -7,10 +7,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 /// <summary>
-/// Based on src by Boeren 
-/// https://wpfcurrencytextbox.codeplex.com/
+/// Fork from mtusk CurrencyTextBox
+/// https://github.com/mtusk/wpf-currency-textbox
 /// 
-/// Modified 2016 by Derek Tremblay (Abbaye) 
+/// Fork 2016 by Derek Tremblay (Abbaye) 
 /// derektremblay666@gmail.com
 /// </summary>
 namespace CurrencyTextBoxControl
@@ -743,8 +743,7 @@ namespace CurrencyTextBoxControl
             throw new NotImplementedException();
         }
         #endregion Undo/Redo
-
-
+        
         #region Others function
 
         /// <summary>
