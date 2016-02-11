@@ -1,5 +1,5 @@
 # WPF Currency/Numeric TextBox
-A WPF TextBox for entering a currency/numeric value, similar to how a cash register works.
+A WPF TextBox for entering a Currency/Numeric value, similar to how a cash register works.
 
 ![example](example.gif?raw=true)
 
@@ -20,7 +20,7 @@ https://www.nuget.org/packages/CurrencyTextBox/
 - This control's template can be customized to change the appearance.
 - Supports data validation.
 
-##Release Notes
+##Release Notes (version of NUGET Package)
 New in version 1.2.0 
 - Add support of numeric value (Stringformat N to N6) 
 
