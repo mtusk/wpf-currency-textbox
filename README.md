@@ -20,7 +20,7 @@ https://www.nuget.org/packages/CurrencyTextBox/
 - This control's template can be customized to change the appearance.
 - Supports data validation.
 
-##Release Notes (version of NUGET Package)
+##Release Notes (NUGET Package version)
 New in version 1.2.0 
 - Add support of numeric value (Stringformat N to N6) 
 
