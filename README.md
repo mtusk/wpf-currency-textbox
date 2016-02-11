@@ -12,7 +12,7 @@ https://www.nuget.org/packages/CurrencyTextBox/
 - If we press the backspace key, the numbers are shifted right: 1.23 => 0.12 => 0.01 => 0.00
 - If we press the delete key, the value is reset to 0.00.
 - If we press the minus key, the value becomes negative.
-- If we press down/up key, the value are increase/decrease
+- If we press down/up key, the value are increase/decrease slowly (keydown repeat for change value faster)
 - Support stringformat C to C6.
 - Support stringformat N to N6.
 - Copy and paste decimal value. ctrl+c / ctrl+v
