@@ -20,6 +20,18 @@ https://www.nuget.org/packages/CurrencyTextBox/
 - This control's template can be customized to change the appearance.
 - Supports data validation.
 
+##Release Notes
+New in version 1.2.0 
+- Add support of numeric value (Stringformat N to N6) 
+
+New in version 1.1.1 
+- Validate MinimumValue / MaximumValue dependency properties 
+- Validate StringFormat dependency property 
+
+New in version 1.1.0 
+- Add support of Undo/Redo 
+- Add Copy/Paste
+
 ## How to use
 Add a reference to `CurrencyTextBoxControl.dll` from your project, then add the following namespace to your XAML:
 
