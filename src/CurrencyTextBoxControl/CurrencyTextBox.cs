@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -17,12 +18,17 @@ namespace CurrencyTextBoxControl
 {
     public class CurrencyTextBox : TextBox
     {
-        #region Global variables
+        #region Global variables / Event
 
         private List<decimal> _undoList = new List<decimal>();
         private List<decimal> _redoList = new List<decimal>();
         private bool _isUndoEnabled = true;
+        private Popup _popup = null;
+        private decimal _numberBeforePopup;
 
+        //private CurrencyTextBox _popupCtb = null;
+
+        public event EventHandler NumberChanged;
         #endregion Global variables
 
         #region Dependency Properties
@@ -65,6 +71,10 @@ namespace CurrencyTextBoxControl
                 ctb.Foreground = Brushes.Red;
             else
                 ctb.Foreground = Brushes.Black;
+
+            //Launch event
+            if (ctb.NumberChanged != null)
+                ctb.NumberChanged(ctb, new EventArgs());
         }
 
         public decimal Number
@@ -72,6 +82,28 @@ namespace CurrencyTextBoxControl
             get { return (decimal)GetValue(NumberProperty); }
             set { SetValue(NumberProperty, value); }
         }
+        
+        public bool IsCalculPanelMode
+        {
+            get { return (bool)GetValue(IsCalculPanelModeProperty); }
+            set { SetValue(IsCalculPanelModeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsCalculPanelMode.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsCalculPanelModeProperty =
+            DependencyProperty.Register("IsCalculPanelMode", typeof(bool), typeof(CurrencyTextBox), new PropertyMetadata(false));
+        
+        public bool CanShowCalculPanel
+        {
+            get { return (bool)GetValue(CanShowCalculPanelProperty); }
+            set { SetValue(CanShowCalculPanelProperty, value); }
+        }
+        
+        /// <summary>
+        /// Set for enabling the calcul panel
+        /// </summary>
+        public static readonly DependencyProperty CanShowCalculPanelProperty =
+            DependencyProperty.Register("CanShowCalculPanel", typeof(bool), typeof(CurrencyTextBox), new PropertyMetadata(false));
 
         public static readonly DependencyProperty MaximumValueProperty =
             DependencyProperty.Register(
@@ -155,7 +187,7 @@ namespace CurrencyTextBoxControl
             typeof(CurrencyTextBox),
             new FrameworkPropertyMetadata("C2", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, StringFormatPropertyChanged, new CoerceValueCallback(StringFormatCoerceValue)),
             new ValidateValueCallback(StringFormatValidateValue));
-
+        
         private static object StringFormatCoerceValue(DependencyObject d, object baseValue)
         {
             return ((string)baseValue).ToUpper();
@@ -313,6 +345,17 @@ namespace CurrencyTextBoxControl
 
                 Redo();
             }
+            else if (IsEnterKey(e.Key))
+            {
+                e.Handled = true;
+
+                if (!IsCalculPanelMode)
+                    ShowCalculPanel();
+                else
+                {                    
+                    ((Popup)Parent).IsOpen = false;
+                }
+            }
             else if (IsDeleteKey(e.Key))
             {
                 e.Handled = true;
@@ -350,6 +393,61 @@ namespace CurrencyTextBoxControl
             }
         }
 
+        private void CopyPasteEventHandler(object sender, DataObjectEventArgs e)
+        {
+            // cancel copy and paste
+            e.CancelCommand();
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// TEST METHOD FOR BUILD END SHOW POPUP
+        /// </summary>
+        private void ShowCalculPanel()
+        {
+            if (CanShowCalculPanel)
+            {
+                _popup = new Popup();
+                _popup.Width = this.ActualWidth;
+                _popup.Height = 32;
+                _popup.Placement = PlacementMode.Bottom;
+                _popup.PlacementTarget = this;
+                _popup.StaysOpen = false;
+                _popup.Closed += _popup_Closed;
+                
+                //Build Child popup
+                CurrencyTextBox ctb = new CurrencyTextBox();
+                ctb.CanShowCalculPanel = false;
+                ctb.IsCalculPanelMode = true;
+                ctb.StringFormat = this.StringFormat;
+                ctb.NumberChanged += Ctb_NumberChanged;
+                ctb.Margin = new Thickness(0, 1, 0, 0);
+                _numberBeforePopup = Number;
+                _popup.Child = ctb;
+
+
+                //    
+                _popup.IsOpen = true;
+
+                ctb.Focus();
+            }
+        }
+
+        private void _popup_Closed(object sender, EventArgs e)
+        {
+            this.Focus();
+        }
+       
+        private void Ctb_NumberChanged(object sender, EventArgs e)
+        {
+            CurrencyTextBox ctb = sender as CurrencyTextBox;
+
+            Number = _numberBeforePopup + ctb.Number;
+        }
+
         /// <summary>
         /// Insert number from key
         /// </summary>
@@ -378,124 +476,6 @@ namespace CurrencyTextBoxControl
 
         }
 
-
-        /// <summary>
-        /// Reset the number to zero.
-        /// </summary>
-        public new void Clear() { Number = 0M; }
-
-        /// <summary>
-        /// Set number to positive
-        /// </summary>
-        public void SetPositive() { if (Number < 0) Number *= -1; }
-
-        /// <summary>
-        /// Set number to negative
-        /// </summary>
-        public void SetNegative() { if (Number > 0) Number *= -1; }
-
-        /// <summary>
-        /// Alternate value to Negative-Positive and Positive-Negative
-        /// </summary>
-        public void InvertValue() { Number *= -1; }
-
-        /// <summary>
-        /// Add one digit to the property number
-        /// </summary>
-        /// <param name="repeat">Repeat add</param>
-        public void AddOneDigit(int repeat = 1)
-        {
-            for (int i = 0; i < repeat; i++)
-                switch (GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat)
-                {
-                    case "N0":
-                    case "C0":
-                        Number = decimal.Add(Number, 1M);
-                        break;
-                    case "N":
-                    case "C":
-                        Number = decimal.Add(Number, 0.01M);
-                        break;
-                    case "N1":
-                    case "C1":
-                        Number = decimal.Add(Number, 0.1M);
-                        break;
-                    case "N2":
-                    case "C2":
-                        Number = decimal.Add(Number, 0.01M);
-                        break;
-                    case "N3":
-                    case "C3":
-                        Number = decimal.Add(Number, 0.001M);
-                        break;
-                    case "N4":
-                    case "C4":
-                        Number = decimal.Add(Number, 0.0001M);
-                        break;
-                    case "N5":
-                    case "C5":
-                        Number = decimal.Add(Number, 0.00001M);
-                        break;
-                    case "N6":
-                    case "C6":
-                        Number = decimal.Add(Number, 0.000001M);
-                        break;
-                }
-        }
-
-        /// <summary>
-        /// Substract one digit to the property number
-        /// </summary>
-        /// <param name="repeat">Repeat substract</param>
-        public void SubstractOneDigit(int repeat = 1)
-        {
-            for (int i = 0; i < repeat; i++)
-                switch (GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat)
-                {
-                    case "N0":
-                    case "C0":
-                        Number = decimal.Subtract(Number, 1M);
-                        break;
-                    case "N":
-                    case "C":
-                        Number = decimal.Subtract(Number, 0.01M);
-                        break;
-                    case "N1":
-                    case "C1":
-                        Number = decimal.Subtract(Number, 0.1M);
-                        break;
-                    case "N2":
-                    case "C2":
-                        Number = decimal.Subtract(Number, 0.01M);
-                        break;
-                    case "N3":
-                    case "C3":
-                        Number = decimal.Subtract(Number, 0.001M);
-                        break;
-                    case "N4":
-                    case "C4":
-                        Number = decimal.Subtract(Number, 0.0001M);
-                        break;
-                    case "N5":
-                    case "C5":
-                        Number = decimal.Subtract(Number, 0.00001M);
-                        break;
-                    case "N6":
-                    case "C6":
-                        Number = decimal.Subtract(Number, 0.000001M);
-                        break;
-                }
-        }
-
-        private void CopyPasteEventHandler(object sender, DataObjectEventArgs e)
-        {
-            // cancel copy and paste
-            e.CancelCommand();
-        }
-
-        #endregion
-
-        #region Private Methods
         private decimal GetDigitFromKey(Key key)
         {
             switch (key)
@@ -596,11 +576,13 @@ namespace CurrencyTextBoxControl
 
         private bool IsDeleteKey(Key key) { return key == Key.Delete; }
 
-        private bool IsIgnoredKey(Key key) { return key == Key.Tab || key == Key.Enter; }
+        private bool IsIgnoredKey(Key key) { return key == Key.Tab; } //|| key == Key.Enter; }
 
         private bool IsUpKey(Key key) { return key == Key.Up; }
 
         private bool IsDownKey(Key key) { return key == Key.Down; }
+
+        private bool IsEnterKey(Key key) { return key == Key.Enter; }
 
         private static bool IsCtrlCKey(Key key) { return key == Key.C && Keyboard.Modifiers == ModifierKeys.Control; }
 
@@ -743,8 +725,117 @@ namespace CurrencyTextBoxControl
             throw new NotImplementedException();
         }
         #endregion Undo/Redo
-        
-        #region Others function
+
+        #region Public Methods
+
+        /// <summary>
+        /// Reset the number to zero.
+        /// </summary>
+        public new void Clear() { Number = 0M; }
+
+        /// <summary>
+        /// Set number to positive
+        /// </summary>
+        public void SetPositive() { if (Number < 0) Number *= -1; }
+
+        /// <summary>
+        /// Set number to negative
+        /// </summary>
+        public void SetNegative() { if (Number > 0) Number *= -1; }
+
+        /// <summary>
+        /// Alternate value to Negative-Positive and Positive-Negative
+        /// </summary>
+        public void InvertValue() { Number *= -1; }
+
+        /// <summary>
+        /// Add one digit to the property number
+        /// </summary>
+        /// <param name="repeat">Repeat add</param>
+        public void AddOneDigit(int repeat = 1)
+        {
+            for (int i = 0; i < repeat; i++)
+                switch (GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat)
+                {
+                    case "N0":
+                    case "C0":
+                        Number = decimal.Add(Number, 1M);
+                        break;
+                    case "N":
+                    case "C":
+                        Number = decimal.Add(Number, 0.01M);
+                        break;
+                    case "N1":
+                    case "C1":
+                        Number = decimal.Add(Number, 0.1M);
+                        break;
+                    case "N2":
+                    case "C2":
+                        Number = decimal.Add(Number, 0.01M);
+                        break;
+                    case "N3":
+                    case "C3":
+                        Number = decimal.Add(Number, 0.001M);
+                        break;
+                    case "N4":
+                    case "C4":
+                        Number = decimal.Add(Number, 0.0001M);
+                        break;
+                    case "N5":
+                    case "C5":
+                        Number = decimal.Add(Number, 0.00001M);
+                        break;
+                    case "N6":
+                    case "C6":
+                        Number = decimal.Add(Number, 0.000001M);
+                        break;
+                }
+        }
+
+        /// <summary>
+        /// Substract one digit to the property number
+        /// </summary>
+        /// <param name="repeat">Repeat substract</param>
+        public void SubstractOneDigit(int repeat = 1)
+        {
+            for (int i = 0; i < repeat; i++)
+                switch (GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat)
+                {
+                    case "N0":
+                    case "C0":
+                        Number = decimal.Subtract(Number, 1M);
+                        break;
+                    case "N":
+                    case "C":
+                        Number = decimal.Subtract(Number, 0.01M);
+                        break;
+                    case "N1":
+                    case "C1":
+                        Number = decimal.Subtract(Number, 0.1M);
+                        break;
+                    case "N2":
+                    case "C2":
+                        Number = decimal.Subtract(Number, 0.01M);
+                        break;
+                    case "N3":
+                    case "C3":
+                        Number = decimal.Subtract(Number, 0.001M);
+                        break;
+                    case "N4":
+                    case "C4":
+                        Number = decimal.Subtract(Number, 0.0001M);
+                        break;
+                    case "N5":
+                    case "C5":
+                        Number = decimal.Subtract(Number, 0.00001M);
+                        break;
+                    case "N6":
+                    case "C6":
+                        Number = decimal.Subtract(Number, 0.000001M);
+                        break;
+                }
+        }
+
 
         /// <summary>
         /// Not implemented actually
