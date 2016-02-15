@@ -22,9 +22,9 @@ https://www.nuget.org/packages/CurrencyTextBox/
 
 ##Release Notes (NUGET Package version)
 New in version 1.3.0 
-- Add support of Undolimit 
+- Add support of Undolimit
 - Add functionality ADD/REMOVE popup (Enter Key when CanShowAddPanel = true) 
-- 
+
 New in version 1.2.0 
 - Add support of numeric value (Stringformat N to N6) 
 
