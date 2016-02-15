@@ -24,6 +24,7 @@ namespace CurrencyTextBoxControl
         private List<decimal> _redoList = new List<decimal>();
         private bool _isUndoEnabled = true;
         private Popup _popup = null;
+        private Label _PopupLabel = null;
         private decimal _numberBeforePopup;
 
         //private CurrencyTextBox _popupCtb = null;
@@ -93,17 +94,17 @@ namespace CurrencyTextBoxControl
         public static readonly DependencyProperty IsCalculPanelModeProperty =
             DependencyProperty.Register("IsCalculPanelMode", typeof(bool), typeof(CurrencyTextBox), new PropertyMetadata(false));
         
-        public bool CanShowCalculPanel
+        public bool CanShowAddPanel
         {
-            get { return (bool)GetValue(CanShowCalculPanelProperty); }
-            set { SetValue(CanShowCalculPanelProperty, value); }
+            get { return (bool)GetValue(CanShowAddPanelProperty); }
+            set { SetValue(CanShowAddPanelProperty, value); }
         }
         
         /// <summary>
         /// Set for enabling the calcul panel
         /// </summary>
-        public static readonly DependencyProperty CanShowCalculPanelProperty =
-            DependencyProperty.Register("CanShowCalculPanel", typeof(bool), typeof(CurrencyTextBox), new PropertyMetadata(false));
+        public static readonly DependencyProperty CanShowAddPanelProperty =
+            DependencyProperty.Register("CanShowAddPanel", typeof(bool), typeof(CurrencyTextBox), new PropertyMetadata(false));
 
         public static readonly DependencyProperty MaximumValueProperty =
             DependencyProperty.Register(
@@ -350,11 +351,12 @@ namespace CurrencyTextBoxControl
                 e.Handled = true;
 
                 if (!IsCalculPanelMode)
-                    ShowCalculPanel();
-                else
-                {                    
-                    ((Popup)Parent).IsOpen = false;
+                {
+                    AddUndoInList(Number);
+                    ShowAddPanel();
                 }
+                else
+                    ((Popup)((Grid)Parent).Parent).IsOpen = false;                
             }
             else if (IsDeleteKey(e.Key))
             {
@@ -406,30 +408,51 @@ namespace CurrencyTextBoxControl
         /// <summary>
         /// TEST METHOD FOR BUILD END SHOW POPUP
         /// </summary>
-        private void ShowCalculPanel()
+        private void ShowAddPanel()
         {
-            if (CanShowCalculPanel)
-            {
+            if (CanShowAddPanel)
+            {                
+                //Initialize somes Child object
+                Grid grid = new Grid();
+                _PopupLabel = new Label();
+                CurrencyTextBox ctb = new CurrencyTextBox();
                 _popup = new Popup();
+
+                //ColumnDefinition
+                ColumnDefinition c1 = new ColumnDefinition();
+                c1.Width = new GridLength(20, GridUnitType.Auto);
+                ColumnDefinition c2 = new ColumnDefinition();
+                c2.Width = new GridLength(80, GridUnitType.Star);
+                grid.ColumnDefinitions.Add(c1);
+                grid.ColumnDefinitions.Add(c2);
+                Grid.SetColumn(_PopupLabel, 0);
+                Grid.SetColumn(ctb, 1);
+
+                //Set object properties                                         
+                ctb.CanShowAddPanel = false;
+                ctb.IsCalculPanelMode = true;
+                ctb.StringFormat = this.StringFormat;
+                ctb.NumberChanged += Ctb_NumberChanged;
+                ctb.Background = Brushes.WhiteSmoke;
+                grid.Background = Brushes.White;
+
                 _popup.Width = this.ActualWidth;
                 _popup.Height = 32;
+                _popup.PopupAnimation = PopupAnimation.Fade;
                 _popup.Placement = PlacementMode.Bottom;
                 _popup.PlacementTarget = this;
                 _popup.StaysOpen = false;
                 _popup.Closed += _popup_Closed;
-                
-                //Build Child popup
-                CurrencyTextBox ctb = new CurrencyTextBox();
-                ctb.CanShowCalculPanel = false;
-                ctb.IsCalculPanelMode = true;
-                ctb.StringFormat = this.StringFormat;
-                ctb.NumberChanged += Ctb_NumberChanged;
-                ctb.Margin = new Thickness(0, 1, 0, 0);
+
                 _numberBeforePopup = Number;
-                _popup.Child = ctb;
-
-
-                //    
+                _PopupLabel.Content = "ADD:";
+                
+                //Add object 
+                grid.Children.Add(_PopupLabel);
+                grid.Children.Add(ctb);
+                _popup.Child = grid;
+                
+                //Open popup    
                 _popup.IsOpen = true;
 
                 ctb.Focus();
@@ -446,6 +469,11 @@ namespace CurrencyTextBoxControl
             CurrencyTextBox ctb = sender as CurrencyTextBox;
 
             Number = _numberBeforePopup + ctb.Number;
+
+            if (ctb.Number >= 0)
+                _PopupLabel.Content = "ADD:";
+            else
+                _PopupLabel.Content = "REMOVE:";
         }
 
         /// <summary>
