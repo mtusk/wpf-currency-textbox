@@ -75,7 +75,7 @@
         </Grid>
         <Label Content="CANSHOWCALCULPANEL - ADD/REMOVE VALUE POPUP" HorizontalAlignment="Left" Margin="10,188,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
         <Grid Margin="10,224,10,0" Height="31" VerticalAlignment="Top">
-            <currency:CurrencyTextBox x:Name="currencyTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="239" Height="30" CanShowAddPanel="True"/>
+            <currency:CurrencyTextBox x:Name="currencyTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="239" Height="30" CanShowAddPanel="True" UpDownRepeat="15"/>
             <Label Content="Hit Enter Key for ADD/REMOVE value" HorizontalAlignment="Left" Margin="297,0,0,0" VerticalAlignment="Top"/>
         </Grid>
     </Grid>

@@ -222,6 +222,19 @@ namespace CurrencyTextBoxControl
 
             BindingOperations.SetBinding(obj, TextBox.TextProperty, textBinding);
         }
+        
+        public int UpDownRepeat
+        {
+            get { return (int)GetValue(UpDownRepeatProperty); }
+            set { SetValue(UpDownRepeatProperty, value); }
+        }
+
+        /// <summary>
+        /// Set the Up/down value when key repeated
+        /// </summary>
+        public static readonly DependencyProperty UpDownRepeatProperty =
+            DependencyProperty.Register("UpDownRepeat", typeof(int), typeof(CurrencyTextBox), new PropertyMetadata(10));
+        
         #endregion Dependency Properties
 
         #region Constructor
@@ -317,7 +330,7 @@ namespace CurrencyTextBoxControl
                 if (e.IsRepeat)
                 {
                     AddUndoInList(Number);
-                    AddOneDigit(10);
+                    AddOneDigit(UpDownRepeat);
                 }
             }
             else if (IsDownKey(e.Key))
@@ -331,7 +344,7 @@ namespace CurrencyTextBoxControl
                 if (e.IsRepeat)
                 {
                     AddUndoInList(Number);
-                    SubstractOneDigit(10);
+                    SubstractOneDigit(UpDownRepeat);
                 }
             }
             else if (IsCtrlZKey(e.Key))
@@ -504,6 +517,9 @@ namespace CurrencyTextBoxControl
 
         }
 
+        /// <summary>
+        /// Get the digit from key
+        /// </summary>        
         private decimal GetDigitFromKey(Key key)
         {
             switch (key)
@@ -681,8 +697,14 @@ namespace CurrencyTextBoxControl
         /// <param name="number"></param>
         private void AddUndoInList(decimal number, bool clearRedo = true)
         {
+            //Clear first item when undolimit is reach
+            if (_undoList.Count == UndoLimit)  
+                _undoList.RemoveRange(0, 1);            
+
+            //Add item to undo list
             _undoList.Add(number);
 
+            //Clear redo when needed
             if (clearRedo)
                 _redoList.Clear();
         }
