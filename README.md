@@ -19,8 +19,14 @@ https://www.nuget.org/packages/CurrencyTextBox/
 - Undo/Redo value with default ctrl+z / ctrl+y
 - This control's template can be customized to change the appearance.
 - Supports data validation.
+- ...
 
 ##Release Notes
+New in version 1.3.1
+- BUG FIX When popup closed the window do not freeze
+- Little desing update un popup
+- Add PopupClosed event
+
 New in version 1.3.0 
 - Add support of Undolimit
 - Add functionality ADD/REMOVE popup (Enter Key when CanShowAddPanel = true) 
