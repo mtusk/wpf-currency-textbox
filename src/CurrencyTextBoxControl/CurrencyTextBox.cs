@@ -26,9 +26,9 @@ namespace CurrencyTextBoxControl
         private Popup _popup = null;
         private Label _PopupLabel = null;
         private decimal _numberBeforePopup;
-
-        //private CurrencyTextBox _popupCtb = null;
-
+       
+        //Event
+        public event EventHandler PopupClosed;
         public event EventHandler NumberChanged;
         #endregion Global variables
 
@@ -366,10 +366,15 @@ namespace CurrencyTextBoxControl
                 if (!IsCalculPanelMode)
                 {
                     AddUndoInList(Number);
-                    ShowAddPanel();
+                    ShowAddPopup();
                 }
                 else
-                    ((Popup)((Grid)Parent).Parent).IsOpen = false;                
+                {
+                    ((Popup)((Grid)Parent).Parent).IsOpen = false;
+                                        
+                    if (PopupClosed != null)
+                        PopupClosed(this, new EventArgs());
+                }
             }
             else if (IsDeleteKey(e.Key))
             {
@@ -416,67 +421,7 @@ namespace CurrencyTextBoxControl
 
         #endregion
 
-        #region Private Methods
-
-        /// <summary>
-        /// TEST METHOD FOR BUILD END SHOW POPUP
-        /// </summary>
-        private void ShowAddPanel()
-        {
-            if (CanShowAddPanel)
-            {                
-                //Initialize somes Child object
-                Grid grid = new Grid();
-                _PopupLabel = new Label();
-                CurrencyTextBox ctb = new CurrencyTextBox();
-                _popup = new Popup();
-
-                //ColumnDefinition
-                ColumnDefinition c1 = new ColumnDefinition();
-                c1.Width = new GridLength(20, GridUnitType.Auto);
-                ColumnDefinition c2 = new ColumnDefinition();
-                c2.Width = new GridLength(80, GridUnitType.Star);
-                grid.ColumnDefinitions.Add(c1);
-                grid.ColumnDefinitions.Add(c2);
-                Grid.SetColumn(_PopupLabel, 0);
-                Grid.SetColumn(ctb, 1);
-
-                //Set object properties                                         
-                ctb.CanShowAddPanel = false;
-                ctb.IsCalculPanelMode = true;
-                ctb.StringFormat = this.StringFormat;
-                ctb.NumberChanged += Ctb_NumberChanged;
-                ctb.Background = Brushes.WhiteSmoke;
-                grid.Background = Brushes.White;
-
-                _popup.Width = this.ActualWidth;
-                _popup.Height = 32;
-                _popup.PopupAnimation = PopupAnimation.Fade;
-                _popup.Placement = PlacementMode.Bottom;
-                _popup.PlacementTarget = this;
-                _popup.StaysOpen = false;
-                _popup.Closed += _popup_Closed;
-
-                _numberBeforePopup = Number;
-                _PopupLabel.Content = "ADD:";
-                
-                //Add object 
-                grid.Children.Add(_PopupLabel);
-                grid.Children.Add(ctb);
-                _popup.Child = grid;
-                
-                //Open popup    
-                _popup.IsOpen = true;
-
-                ctb.Focus();
-            }
-        }
-
-        private void _popup_Closed(object sender, EventArgs e)
-        {
-            this.Focus();
-        }
-       
+        #region Private Methods       
         private void Ctb_NumberChanged(object sender, EventArgs e)
         {
             CurrencyTextBox ctb = sender as CurrencyTextBox;
@@ -484,9 +429,9 @@ namespace CurrencyTextBoxControl
             Number = _numberBeforePopup + ctb.Number;
 
             if (ctb.Number >= 0)
-                _PopupLabel.Content = "ADD:";
+                _PopupLabel.Content = "+";
             else
-                _PopupLabel.Content = "REMOVE:";
+                _PopupLabel.Content = "-";
         }
 
         /// <summary>
@@ -919,5 +864,66 @@ namespace CurrencyTextBoxControl
             Clipboard.SetText(Number.ToString());
         }
         #endregion Clipboard
+
+        #region Add/remove value Popup 
+        /// <summary>
+        /// Show popup for add/remove value
+        /// </summary>
+        private void ShowAddPopup()
+        {
+            if (CanShowAddPanel)
+            {
+                //Initialize somes Child object
+                Grid grid = new Grid();
+                _PopupLabel = new Label();
+                CurrencyTextBox ctbPopup = new CurrencyTextBox();
+                _popup = new Popup();
+
+                //ColumnDefinition
+                ColumnDefinition c1 = new ColumnDefinition();
+                c1.Width = new GridLength(20, GridUnitType.Auto);
+                ColumnDefinition c2 = new ColumnDefinition();
+                c2.Width = new GridLength(80, GridUnitType.Star);
+                grid.ColumnDefinitions.Add(c1);
+                grid.ColumnDefinitions.Add(c2);
+                Grid.SetColumn(_PopupLabel, 0);
+                Grid.SetColumn(ctbPopup, 1);
+
+                //Set object properties                                         
+                ctbPopup.CanShowAddPanel = false;
+                ctbPopup.IsCalculPanelMode = true;
+                ctbPopup.StringFormat = this.StringFormat;
+                ctbPopup.NumberChanged += Ctb_NumberChanged;
+                ctbPopup.Background = Brushes.WhiteSmoke;
+                ctbPopup.PopupClosed += CtbPopup_PopupClosed;
+                grid.Background = Brushes.White;
+
+                _popup.Width = this.ActualWidth;
+                _popup.Height = 32;
+                _popup.PopupAnimation = PopupAnimation.Fade;
+                _popup.Placement = PlacementMode.Bottom;
+                _popup.PlacementTarget = this;
+                _popup.StaysOpen = false;
+
+                _numberBeforePopup = Number;
+                _PopupLabel.Content = "+";
+
+                //Add object 
+                grid.Children.Add(_PopupLabel);
+                grid.Children.Add(ctbPopup);
+                _popup.Child = grid;
+
+                //Open popup    
+                _popup.IsOpen = true;
+
+                ctbPopup.Focus();
+            }
+        }
+
+        private void CtbPopup_PopupClosed(object sender, EventArgs e)
+        {
+            this.Focus();
+        }
+        #endregion Add/remove value Popup
     }
 }

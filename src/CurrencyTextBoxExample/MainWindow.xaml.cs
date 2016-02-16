@@ -40,7 +40,7 @@ namespace CurrencyTextBoxExample
         public MainWindow()
         {
             InitializeComponent();
-
+            
             this.DataContext = this;
         }
 

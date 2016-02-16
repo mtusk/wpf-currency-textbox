@@ -6,8 +6,7 @@
         Width="766"
         Height="400"
         FontFamily="Consolas"
-        FontSize="18"
-        ResizeMode="NoResize">
+        FontSize="18">
     <Grid Name="LayoutRoot" Margin="5">
 
         <Grid Margin="10,46,0,0" HorizontalAlignment="Left" Width="730" Height="31" VerticalAlignment="Top">
