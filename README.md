@@ -19,6 +19,7 @@ https://www.nuget.org/packages/CurrencyTextBox/
 - Undo/Redo value with default ctrl+z / ctrl+y
 - This control's template can be customized to change the appearance.
 - Supports data validation.
+- Auto color (Red/Black) when negative or positive value 
 - ...
 
 ##Release Notes
