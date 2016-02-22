@@ -56,4 +56,17 @@ Insert the control like this:
 <currency:CurrencyTextBox Number="{Binding Number}" />
 
 <currency:CurrencyTextBox Number="{Binding Number}" MaximumValue="{Binding MaximumFromDB}" MinimumValue="{Binding MininumFromDB}"/>
+
+
+<currency:CurrencyTextBox x:Name="myCurrencyTextBox" Number="{Binding Number, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
+      <currency:CurrencyTextBox.Style>
+          <Style TargetType="{x:Type currency:CurrencyTextBox}">
+              <Style.Triggers>
+                  <Trigger Property="Validation.HasError" Value="True">
+                      <Setter Property="ToolTip" Value="{Binding (Validation.Errors).CurrentItem.ErrorContent, RelativeSource={RelativeSource self}}" />
+                  </Trigger>
+              </Style.Triggers>
+          </Style>
+      </currency:CurrencyTextBox.Style>
+</currency:CurrencyTextBox>
 ```
