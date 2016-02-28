@@ -202,7 +202,8 @@ namespace CurrencyTextBoxControl
             var val = value.ToString().ToUpper();
 
             return val == "C0" || val == "C" || val == "C1" || val == "C2" || val == "C3" || val == "C4" || val == "C5" || val == "C6" ||
-                val == "N0" || val == "N" || val == "N1" || val == "N2" || val == "N3" || val == "N4" || val == "N5" || val == "N6";
+                val == "N0" || val == "N" || val == "N1" || val == "N2" || val == "N3" || val == "N4" || val == "N5" || val == "N6" ||
+                val == "P0" || val == "P" || val == "P1" || val == "P2" || val == "P3" || val == "P4" || val == "P5" || val == "P6";
         }
 
         public string StringFormat
@@ -282,6 +283,8 @@ namespace CurrencyTextBoxControl
 
             if (Number < 0 && tb.Text.EndsWith(")"))
                 tb.CaretIndex = tb.Text.Length - 1;
+            else if (tb.Text.EndsWith("%"))
+                tb.CaretIndex = tb.Text.Length - 2;
             else
                 tb.CaretIndex = tb.Text.Length;
         }
@@ -517,6 +520,14 @@ namespace CurrencyTextBoxControl
                 case "C5": return 100000M;
                 case "N6":
                 case "C6": return 1000000M;
+                case "P0": return 100M;
+                case "P": return 10000M;
+                case "P1": return 1000M;
+                case "P2": return 10000M;
+                case "P3": return 100000M;
+                case "P4": return 1000000M;
+                case "P5": return 10000000M;
+                case "P6": return 100000000M;
             }
 
             return 1M;
@@ -529,20 +540,28 @@ namespace CurrencyTextBoxControl
         {
             switch (GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat)
             {
+                case "P0": return 3;
                 case "N0":
                 case "C0": return 1;
+                case "P": return 5;
                 case "N":
                 case "C": return 3;
+                case "P1": return 4;
                 case "N1":
                 case "C1": return 2;
+                case "P2": return 5;
                 case "N2":
                 case "C2": return 3;
+                case "P3": return 6;
                 case "N3":
                 case "C3": return 4;
+                case "P4": return 7;
                 case "N4":
                 case "C4": return 5;
+                case "P5": return 8;
                 case "N5":
                 case "C5": return 6;
+                case "P6": return 9;
                 case "N6":
                 case "C6": return 7;
             }
@@ -606,6 +625,7 @@ namespace CurrencyTextBoxControl
 
         /// <summary>
         /// Get number adjuster to fix when you delete right most digit
+        /// Not used with percent stringformat
         /// </summary>
         /// <returns></returns>
         private string GetNumberAdjuster()
@@ -752,33 +772,57 @@ namespace CurrencyTextBoxControl
             for (int i = 0; i < repeat; i++)
                 switch (GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat)
                 {
+                    case "P0":
+                        Number = decimal.Add(Number, 0.01M);
+                        break;
                     case "N0":
                     case "C0":
                         Number = decimal.Add(Number, 1M);
+                        break;
+                    case "P":
+                        Number = decimal.Add(Number, 0.0001M);
                         break;
                     case "N":
                     case "C":
                         Number = decimal.Add(Number, 0.01M);
                         break;
+                    case "P1":
+                        Number = decimal.Add(Number, 0.001M);
+                        break;
                     case "N1":
                     case "C1":
                         Number = decimal.Add(Number, 0.1M);
+                        break;
+                    case "P2":
+                        Number = decimal.Add(Number, 0.0001M);
                         break;
                     case "N2":
                     case "C2":
                         Number = decimal.Add(Number, 0.01M);
                         break;
+                    case "P3":
+                        Number = decimal.Add(Number, 0.00001M);
+                        break;
                     case "N3":
                     case "C3":
                         Number = decimal.Add(Number, 0.001M);
+                        break;
+                    case "P4":
+                        Number = decimal.Add(Number, 0.000001M);
                         break;
                     case "N4":
                     case "C4":
                         Number = decimal.Add(Number, 0.0001M);
                         break;
+                    case "P5":
+                        Number = decimal.Add(Number, 0.0000001M);
+                        break;
                     case "N5":
                     case "C5":
                         Number = decimal.Add(Number, 0.00001M);
+                        break;
+                    case "P6":
+                        Number = decimal.Add(Number, 0.00000001M);
                         break;
                     case "N6":
                     case "C6":
@@ -796,33 +840,57 @@ namespace CurrencyTextBoxControl
             for (int i = 0; i < repeat; i++)
                 switch (GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat)
                 {
+                    case "P0":
+                        Number = decimal.Subtract(Number, 0.01M);
+                        break;
                     case "N0":
                     case "C0":
                         Number = decimal.Subtract(Number, 1M);
+                        break;
+                    case "P":
+                        Number = decimal.Subtract(Number, 0.0001M);
                         break;
                     case "N":
                     case "C":
                         Number = decimal.Subtract(Number, 0.01M);
                         break;
+                    case "P1":
+                        Number = decimal.Subtract(Number, 0.001M);
+                        break;
                     case "N1":
                     case "C1":
                         Number = decimal.Subtract(Number, 0.1M);
+                        break;
+                    case "P2":
+                        Number = decimal.Subtract(Number, 0.0001M);
                         break;
                     case "N2":
                     case "C2":
                         Number = decimal.Subtract(Number, 0.01M);
                         break;
+                    case "P3":
+                        Number = decimal.Subtract(Number, 0.00001M);
+                        break;
                     case "N3":
                     case "C3":
                         Number = decimal.Subtract(Number, 0.001M);
+                        break;
+                    case "P4":
+                        Number = decimal.Subtract(Number, 0.000001M);
                         break;
                     case "N4":
                     case "C4":
                         Number = decimal.Subtract(Number, 0.0001M);
                         break;
+                    case "P5":
+                        Number = decimal.Subtract(Number, 0.0000001M);
+                        break;
                     case "N5":
                     case "C5":
                         Number = decimal.Subtract(Number, 0.00001M);
+                        break;
+                    case "P6":
+                        Number = decimal.Subtract(Number, 0.00000001M);
                         break;
                     case "N6":
                     case "C6":

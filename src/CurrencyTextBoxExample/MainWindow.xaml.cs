@@ -26,7 +26,7 @@ namespace CurrencyTextBoxExample
             {
                 if (_stringFormats == null)
                 {
-                    _stringFormats = new List<string>() { "C0", "C", "C1", "C2", "C3", "C4", "C5", "C6", "N0", "N", "N1", "N2", "N3", "N4", "N5", "N6"};
+                    _stringFormats = new List<string>() { "C0", "C", "C1", "C2", "C3", "C4", "C5", "C6", "N0", "N", "N1", "N2", "N3", "N4", "N5", "N6", "P0", "P", "P1", "P2", "P3", "P4", "P5", "P6"};
                 }
 
                 return _stringFormats;

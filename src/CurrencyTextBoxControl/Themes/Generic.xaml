@@ -1,8 +1,14 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:CurrencyTextBoxControl"
+                    xmlns:local="clr-namespace:CurrencyTextBoxControl"                    
                     xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero">
-    <Style TargetType="{x:Type local:CurrencyTextBox}">
+
+    <!--New Light Style-->
+    <Style TargetType="local:CurrencyTextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="TextAlignment" Value="Right" />
+    </Style>
+
+    <!--<Style TargetType="{x:Type local:CurrencyTextBox}">
         <Setter Property="TextAlignment" Value="Right" />
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
@@ -34,5 +40,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
+    </Style>-->
+
 </ResourceDictionary>
