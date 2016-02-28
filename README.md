@@ -1,7 +1,7 @@
 # WPF Currency/Numeric TextBox
 A WPF TextBox for entering a currency/numeric value, similar to how a cash register works.
 
-![example](example.gif?raw=true)
+![example](CurrencyTextBoxSample.png?raw=true)
 
 ##NUGET
 https://www.nuget.org/packages/CurrencyTextBox/
@@ -19,8 +19,15 @@ https://www.nuget.org/packages/CurrencyTextBox/
 - Undo/Redo value with default ctrl+z / ctrl+y
 - This control's template can be customized to change the appearance.
 - Supports data validation.
+- Auto color (Red/Black) when negative or positive value 
+- ...
 
 ##Release Notes
+New in version 1.3.1
+- BUG FIX When popup closed the window do not freeze
+- Little desing update un popup
+- Add PopupClosed event
+
 New in version 1.3.0 
 - Add support of Undolimit
 - Add functionality ADD/REMOVE popup (Enter Key when CanShowAddPanel = true) 
@@ -49,4 +56,17 @@ Insert the control like this:
 <currency:CurrencyTextBox Number="{Binding Number}" />
 
 <currency:CurrencyTextBox Number="{Binding Number}" MaximumValue="{Binding MaximumFromDB}" MinimumValue="{Binding MininumFromDB}"/>
+
+
+<currency:CurrencyTextBox x:Name="myCurrencyTextBox" Number="{Binding Number, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
+      <currency:CurrencyTextBox.Style>
+          <Style TargetType="{x:Type currency:CurrencyTextBox}">
+              <Style.Triggers>
+                  <Trigger Property="Validation.HasError" Value="True">
+                      <Setter Property="ToolTip" Value="{Binding (Validation.Errors).CurrentItem.ErrorContent, RelativeSource={RelativeSource self}}" />
+                  </Trigger>
+              </Style.Triggers>
+          </Style>
+      </currency:CurrencyTextBox.Style>
+</currency:CurrencyTextBox>
 ```
