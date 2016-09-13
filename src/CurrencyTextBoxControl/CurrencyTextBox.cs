@@ -26,6 +26,40 @@ namespace CurrencyTextBoxControl
             }
         }
 
+        public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register(
+            "Maximum",
+            typeof(decimal),
+            typeof(CurrencyTextBox),
+            new FrameworkPropertyMetadata(decimal.MaxValue, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public decimal Maximum
+        {
+            get
+            {
+                return (decimal)GetValue(MaximumProperty);
+            }
+            set
+            {
+                SetValue(MaximumProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty MinimumProperty = DependencyProperty.Register(
+            "Minimum",
+            typeof(decimal),
+            typeof(CurrencyTextBox),
+            new FrameworkPropertyMetadata(decimal.MinValue, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public decimal Minimum
+        {
+            get
+            {
+                return (decimal)GetValue(MinimumProperty);
+            }
+            set
+            {
+                SetValue(MinimumProperty, value);
+            }
+        }
+
         public static readonly DependencyProperty StringFormatProperty = DependencyProperty.Register(
             "StringFormat",
             typeof(string),
@@ -131,11 +165,11 @@ namespace CurrencyTextBoxControl
                 // Push the new number from the right
                 if (Number < 0)
                 {
-                    Number = (Number * 10M) - (GetDigitFromKey(e.Key) / 100M);
+                    Number = ConstrainToExtrema((Number * 10M) - (GetDigitFromKey(e.Key) / 100M));
                 }
                 else
                 {
-                    Number = (Number * 10M) + (GetDigitFromKey(e.Key) / 100M);
+                    Number = ConstrainToExtrema((Number * 10M) + (GetDigitFromKey(e.Key) / 100M)); 
                 }
             }
             else if (e.Key == Key.Back)
@@ -155,7 +189,7 @@ namespace CurrencyTextBoxControl
             {
                 e.Handled = true;
 
-                Number *= -1;
+                Number = ConstrainToExtrema(Number * -1);
             }
             else if (IsIgnoredKey(e.Key))
             {
@@ -165,6 +199,11 @@ namespace CurrencyTextBoxControl
             {
                 e.Handled = true;
             }
+        }
+
+        private decimal ConstrainToExtrema(decimal number)
+        {
+            return Math.Max(Minimum, Math.Min(Maximum, number));
         }
 
         private void PastingEventHandler(object sender, DataObjectEventArgs e)
