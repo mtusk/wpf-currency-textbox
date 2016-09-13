@@ -10,13 +10,13 @@
         FontSize="18">
     <Grid x:Name="LayoutRoot" Margin="5">
 
-        <Grid Margin="10,46,0,0" HorizontalAlignment="Left" Width="730" Height="31" VerticalAlignment="Top">
+        <Grid Margin="10,46,0,0" HorizontalAlignment="Left" Width="730" Height="31" VerticalAlignment="Top" Background="#FFDEDEDE">
 
             <currency:CurrencyTextBox x:Name="myCurrencyTextBox"
 				VerticalAlignment="Center"
 				VerticalContentAlignment="Center"
                                   
-				Number="{Binding Number, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" HorizontalAlignment="Left" Width="239" Height="31" CanShowAddPanel="True">
+				Number="{Binding Number, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" HorizontalAlignment="Left" Width="229" Height="31" CanShowAddPanel="True" Margin="10,0,0,0">
                 <currency:CurrencyTextBox.Style>
                     <Style TargetType="{x:Type currency:CurrencyTextBox}">
                         <Style.Triggers>
@@ -43,9 +43,9 @@
         </Grid>
         <Label x:Name="label" Content="DATA VALIDATION" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
         <Label x:Name="label_Copy" Content="MINIMUM/MAXIMUM VALUE" HorizontalAlignment="Left" Margin="10,82,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-        <Grid Margin="10,118,10,0" Height="30" VerticalAlignment="Top">
+        <Grid Margin="10,118,10,0" Height="30" VerticalAlignment="Top" Background="#FFDEDEDE">
             <currency:CurrencyTextBox x:Name="ctbMinValue" HorizontalAlignment="Left" 
-				TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="239"/>
+				TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="229" Margin="10,0,0,0"/>
             <TextBlock
 				Grid.Column="0"
 				Margin="294,3,0,5"
@@ -58,9 +58,9 @@
 				TextWrapping="Wrap" VerticalAlignment="Top" Height="30" 
 				Width="176" StringFormat="n2" Text="0.00"/>
         </Grid>
-        <Grid Margin="10,153,10,0" Height="30" VerticalAlignment="Top">
+        <Grid Margin="10,153,10,0" Height="30" VerticalAlignment="Top" Background="#FFDEDEDE">
             <currency:CurrencyTextBox x:Name="ctbMaxValue" HorizontalAlignment="Left" 
-				TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="239"/>
+				TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="229" Margin="10,0,0,0"/>
             <TextBlock
 				Grid.Column="0"
 				Margin="294,3,0,5"
@@ -74,10 +74,10 @@
 				Width="176" StringFormat="n2" Text="0.00"/>
         </Grid>
         <Label Content="CANSHOWCALCULPANEL - ADD/REMOVE VALUE POPUP" HorizontalAlignment="Left" Margin="10,188,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-        <Grid Margin="10,224,10,0" Height="31" VerticalAlignment="Top">
-            <currency:CurrencyTextBox x:Name="currencyTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="239" Height="30" CanShowAddPanel="True" UpDownRepeat="15"/>
+        <Grid Margin="10,224,10,0" Height="31" VerticalAlignment="Top" Background="#FFDEDEDE">
+            <currency:CurrencyTextBox x:Name="currencyTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="229" Height="30" CanShowAddPanel="True" UpDownRepeat="15" Margin="10,0,0,0"/>
             <Label Content="Hit Enter Key for ADD/REMOVE value" HorizontalAlignment="Left" Margin="297,0,0,0" VerticalAlignment="Top"/>
         </Grid>
-        <currency:CurrencyTextBox HorizontalAlignment="Left" VerticalAlignment="Top" Width="239" Height="30" UpDownRepeat="15" Margin="27,266,0,0" StringFormat="P2"/>
+        <currency:CurrencyTextBox HorizontalAlignment="Left" VerticalAlignment="Top" Width="227" Height="30" UpDownRepeat="15" Margin="21,266,0,0" StringFormat="P2"/>
     </Grid>
 </Window>
