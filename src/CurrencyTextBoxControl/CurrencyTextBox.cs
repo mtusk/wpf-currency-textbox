@@ -364,8 +364,6 @@ namespace CurrencyTextBoxControl
             }
             else if (IsEnterKey(e.Key))
             {
-                e.Handled = true;
-
                 if (!IsCalculPanelMode)
                 {
                     AddUndoInList(Number);
@@ -374,9 +372,12 @@ namespace CurrencyTextBoxControl
                 else
                 {
                     ((Popup)((Grid)Parent).Parent).IsOpen = false;
-                                        
+
                     if (PopupClosed != null)
+                    {
+                        e.Handled = true;
                         PopupClosed(this, new EventArgs());
+                    }
                 }
             }
             else if (IsDeleteKey(e.Key))

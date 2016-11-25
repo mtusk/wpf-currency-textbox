@@ -64,5 +64,10 @@ namespace CurrencyTextBoxExample
                 }
             }
         }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Default Button activated!");
+        }
     }
 }

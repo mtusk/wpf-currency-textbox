@@ -4,8 +4,8 @@
         xmlns:currency="clr-namespace:CurrencyTextBoxControl;assembly=CurrencyTextBoxControl"
         x:Class="CurrencyTextBoxExample.MainWindow"
         Title="CurrencyTextBox Example"
-        Width="766"
-        Height="347"
+        Width="887"
+        Height="381"
         FontFamily="Consolas"
         FontSize="18">
     <Grid x:Name="LayoutRoot" Margin="5">
@@ -79,5 +79,7 @@
             <Label Content="Hit Enter Key for ADD/REMOVE value" HorizontalAlignment="Left" Margin="297,0,0,0" VerticalAlignment="Top"/>
         </Grid>
         <currency:CurrencyTextBox HorizontalAlignment="Left" VerticalAlignment="Top" Width="227" Height="30" UpDownRepeat="15" Margin="21,266,0,0" StringFormat="P2"/>
+        <Button x:Name="button" Content="Default window Button" Margin="581,0,10,10" IsDefault="True" Height="25" VerticalAlignment="Bottom" Click="button_Click"/>
+        <TextBox x:Name="textBox" Margin="0,0,293,10" TextWrapping="Wrap" Text="IsDefault test - Push enter key when focus... " HorizontalAlignment="Right" Width="326" Height="25" VerticalAlignment="Bottom"/>
     </Grid>
 </Window>
