@@ -571,6 +571,34 @@ namespace CurrencyTextBoxControl
         }
 
         /// <summary>
+        /// Get the number of digit .
+        /// </summary>
+        private int GetDigitCount()
+        {
+            switch (GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat)
+            {
+                case "N0":
+                case "C0": return 0;
+                case "N":
+                case "C": return 2;
+                case "N1":
+                case "C1": return 1;
+                case "N2":
+                case "C2": return 2;
+                case "N3":
+                case "C3": return 3;
+                case "N4":
+                case "C4": return 4;
+                case "N5":
+                case "C5": return 5;
+                case "N6":
+                case "C6": return 6;
+            }
+
+            return 1;
+        }
+
+        /// <summary>
         /// Check if is a numeric key as pressed
         /// </summary>
         private bool IsNumericKey(Key key)
@@ -919,7 +947,23 @@ namespace CurrencyTextBoxControl
         {
             try
             {
-                Number = decimal.Parse(Clipboard.GetText());
+                switch (GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat)
+                {                    
+                    case "P0": 
+                    case "P": 
+                    case "P1": 
+                    case "P2": 
+                    case "P3": 
+                    case "P4": 
+                    case "P5": 
+                    case "P6":
+                        Number = decimal.Parse(Clipboard.GetText());
+                        break;
+                    default:
+                        Number = Math.Round(decimal.Parse(Clipboard.GetText()), GetDigitCount());
+                        break;
+                }
+                
             }
             catch { }
         }
