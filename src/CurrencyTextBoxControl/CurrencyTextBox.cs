@@ -172,7 +172,7 @@ namespace CurrencyTextBoxControl
             // Prevent copy/paste
             e.CancelCommand();
         }
-        #endregion
+        #endregion 
 
         #region Private Methods
         private decimal GetDigitFromKey(Key key)
