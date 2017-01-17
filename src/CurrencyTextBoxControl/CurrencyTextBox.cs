@@ -94,7 +94,7 @@ namespace CurrencyTextBoxControl
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var tb = sender as TextBox;
-
+            // comment
             if (Number < 0 && tb.GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat == "C")
             {
                 // If a negative number and a StringFormat of "C" is used, then
@@ -172,7 +172,7 @@ namespace CurrencyTextBoxControl
             // Prevent copy/paste
             e.CancelCommand();
         }
-        #endregion
+        #endregion 
 
         #region Private Methods
         private decimal GetDigitFromKey(Key key)
