@@ -161,15 +161,16 @@ namespace CurrencyTextBoxControl
 
 
             var format = (sender as TextBox).GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat;
-            var precision = 100M;
-            if (format.StartsWith("C", StringComparison.Ordinal) && format.Length > 1)
-            {
-                precision = (decimal)Math.Pow(10, (Int32.Parse(format.Substring(1))));
-            }
 
             if (IsNumericKey(e.Key))
             {
                 e.Handled = true;
+
+                var precision = 100M;
+                if (format.StartsWith("C", StringComparison.Ordinal) && format.Length > 1)
+                {
+                    precision = (decimal)Math.Pow(10, (Int32.Parse(format.Substring(1))));
+                }
 
                 // Push the new number from the right
                 if (Number < 0)
@@ -185,8 +186,16 @@ namespace CurrencyTextBoxControl
             {
                 e.Handled = true;
 
+                var precision = 0.1M; 
+                if (format.StartsWith("C", StringComparison.Ordinal) && format.Length > 1)
+                {
+                    var fmtVal = (Int32.Parse(format.Substring(1)));;
+                    precision = 1 / (decimal)Math.Pow(10, fmtVal - 1);
+                }
+
                 // Remove the right-most digit
-                Number = (Number - (Number % 0.1M)) / precision;
+                var right = (Number % precision);
+                Number = (Number - right) / 10M;
             }
             else if (e.Key == Key.Delete)
             {
