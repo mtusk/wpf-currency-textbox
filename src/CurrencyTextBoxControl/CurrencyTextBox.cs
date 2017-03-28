@@ -129,7 +129,7 @@ namespace CurrencyTextBoxControl
         {
             var tb = sender as TextBox;
 
-            if (Number < 0 && tb.GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat == "C")
+            if (Number < 0 && tb.GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat.StartsWith("C", StringComparison.Ordinal))
             {
                 // If a negative number and a StringFormat of "C" is used, then
                 // place the caret before the closing paren.
@@ -162,14 +162,21 @@ namespace CurrencyTextBoxControl
             {
                 e.Handled = true;
 
+                var format = (sender as TextBox).GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat;
+                var precision = 100M;
+                if(format.StartsWith("C", StringComparison.Ordinal) && format.Length > 1)
+                {
+                    precision = (decimal)Math.Pow(10, (Int32.Parse(format.Substring(1))));
+                }
+
                 // Push the new number from the right
                 if (Number < 0)
                 {
-                    Number = ConstrainToExtrema((Number * 10M) - (GetDigitFromKey(e.Key) / 100M));
+                    Number = ConstrainToExtrema((Number * 10M) - (GetDigitFromKey(e.Key) / precision));
                 }
                 else
                 {
-                    Number = ConstrainToExtrema((Number * 10M) + (GetDigitFromKey(e.Key) / 100M)); 
+                    Number = ConstrainToExtrema((Number * 10M) + (GetDigitFromKey(e.Key) / precision)); 
                 }
             }
             else if (e.Key == Key.Back)
