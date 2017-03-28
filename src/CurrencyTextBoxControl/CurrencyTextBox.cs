@@ -158,16 +158,18 @@ namespace CurrencyTextBoxControl
 
         private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+
+
+            var format = (sender as TextBox).GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat;
+            var precision = 100M;
+            if (format.StartsWith("C", StringComparison.Ordinal) && format.Length > 1)
+            {
+                precision = (decimal)Math.Pow(10, (Int32.Parse(format.Substring(1))));
+            }
+
             if (IsNumericKey(e.Key))
             {
                 e.Handled = true;
-
-                var format = (sender as TextBox).GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat;
-                var precision = 100M;
-                if(format.StartsWith("C", StringComparison.Ordinal) && format.Length > 1)
-                {
-                    precision = (decimal)Math.Pow(10, (Int32.Parse(format.Substring(1))));
-                }
 
                 // Push the new number from the right
                 if (Number < 0)
@@ -184,7 +186,7 @@ namespace CurrencyTextBoxControl
                 e.Handled = true;
 
                 // Remove the right-most digit
-                Number = (Number - (Number % 0.1M)) / 10M;
+                Number = (Number - (Number % 0.1M)) / precision;
             }
             else if (e.Key == Key.Delete)
             {
