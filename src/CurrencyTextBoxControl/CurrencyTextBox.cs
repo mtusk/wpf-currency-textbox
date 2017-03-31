@@ -26,6 +26,40 @@ namespace CurrencyTextBoxControl
             }
         }
 
+        public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register(
+            "Maximum",
+            typeof(decimal),
+            typeof(CurrencyTextBox),
+            new FrameworkPropertyMetadata(decimal.MaxValue, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public decimal Maximum
+        {
+            get
+            {
+                return (decimal)GetValue(MaximumProperty);
+            }
+            set
+            {
+                SetValue(MaximumProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty MinimumProperty = DependencyProperty.Register(
+            "Minimum",
+            typeof(decimal),
+            typeof(CurrencyTextBox),
+            new FrameworkPropertyMetadata(decimal.MinValue, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public decimal Minimum
+        {
+            get
+            {
+                return (decimal)GetValue(MinimumProperty);
+            }
+            set
+            {
+                SetValue(MinimumProperty, value);
+            }
+        }
+
         public static readonly DependencyProperty StringFormatProperty = DependencyProperty.Register(
             "StringFormat",
             typeof(string),
@@ -95,7 +129,7 @@ namespace CurrencyTextBoxControl
         {
             var tb = sender as TextBox;
 
-            if (Number < 0 && tb.GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat == "C")
+            if (Number < 0 && tb.GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat.StartsWith("C", StringComparison.Ordinal))
             {
                 // If a negative number and a StringFormat of "C" is used, then
                 // place the caret before the closing paren.
@@ -124,26 +158,44 @@ namespace CurrencyTextBoxControl
 
         private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+
+
+            var format = (sender as TextBox).GetBindingExpression(TextBox.TextProperty).ParentBinding.StringFormat;
+
             if (IsNumericKey(e.Key))
             {
                 e.Handled = true;
 
+                var precision = 100M;
+                if (format.StartsWith("C", StringComparison.Ordinal) && format.Length > 1)
+                {
+                    precision = (decimal)Math.Pow(10, (Int32.Parse(format.Substring(1))));
+                }
+
                 // Push the new number from the right
                 if (Number < 0)
                 {
-                    Number = (Number * 10M) - (GetDigitFromKey(e.Key) / 100M);
+                    Number = ConstrainToExtrema((Number * 10M) - (GetDigitFromKey(e.Key) / precision));
                 }
                 else
                 {
-                    Number = (Number * 10M) + (GetDigitFromKey(e.Key) / 100M);
+                    Number = ConstrainToExtrema((Number * 10M) + (GetDigitFromKey(e.Key) / precision)); 
                 }
             }
             else if (e.Key == Key.Back)
             {
                 e.Handled = true;
 
+                var precision = 0.1M; 
+                if (format.StartsWith("C", StringComparison.Ordinal) && format.Length > 1)
+                {
+                    var fmtVal = (Int32.Parse(format.Substring(1)));;
+                    precision = 1 / (decimal)Math.Pow(10, fmtVal - 1);
+                }
+
                 // Remove the right-most digit
-                Number = (Number - (Number % 0.1M)) / 10M;
+                var right = (Number % precision);
+                Number = (Number - right) / 10M;
             }
             else if (e.Key == Key.Delete)
             {
@@ -155,7 +207,7 @@ namespace CurrencyTextBoxControl
             {
                 e.Handled = true;
 
-                Number *= -1;
+                Number = ConstrainToExtrema(Number * -1);
             }
             else if (IsIgnoredKey(e.Key))
             {
@@ -165,6 +217,11 @@ namespace CurrencyTextBoxControl
             {
                 e.Handled = true;
             }
+        }
+
+        private decimal ConstrainToExtrema(decimal number)
+        {
+            return Math.Max(Minimum, Math.Min(Maximum, number));
         }
 
         private void PastingEventHandler(object sender, DataObjectEventArgs e)
