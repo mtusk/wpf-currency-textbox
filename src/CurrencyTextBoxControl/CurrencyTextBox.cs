@@ -66,12 +66,11 @@ namespace CurrencyTextBoxControl
         private static void NumberPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             CurrencyTextBox ctb = d as CurrencyTextBox;
+            if (ctb == null)
+                return;
 
-            //Color update
-            if (ctb.Number < 0)
-                ctb.Foreground = Brushes.Red;
-            else
-                ctb.Foreground = Brushes.Black;
+            //Update IsNegative
+            ctb.SetValue(IsNegativeProperty, ctb.Number < 0);
 
             //Launch event
             if (ctb.NumberChanged != null)
@@ -82,6 +81,14 @@ namespace CurrencyTextBoxControl
         {
             get { return (decimal)GetValue(NumberProperty); }
             set { SetValue(NumberProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsNegativeProperty =
+            DependencyProperty.Register("IsNegative", typeof(bool), typeof(CurrencyTextBox), new PropertyMetadata(false));
+
+        public bool IsNegative
+        {
+            get { return (bool) GetValue(IsNegativeProperty); }
         }
         
         public bool IsCalculPanelMode
