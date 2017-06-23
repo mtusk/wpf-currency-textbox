@@ -315,6 +315,12 @@ namespace CurrencyTextBoxControl
         /// </summary>
         private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if (IsReadOnly)
+            {
+                e.Handled = true;
+                return;
+            }
+
             if (IsNumericKey(e.Key))
             {
                 e.Handled = true;
