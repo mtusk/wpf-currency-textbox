@@ -3,7 +3,7 @@ A WPF TextBox for entering a currency/numeric/percent value, similar to how a ca
 
 ![example](CurrencyTextBoxSample.png?raw=true)
 
-##NUGET
+## NUGET
 https://www.nuget.org/packages/CurrencyTextBox/
 
 ## Features
@@ -23,7 +23,7 @@ https://www.nuget.org/packages/CurrencyTextBox/
 - Auto color (Red/Black) when negative or positive value 
 - ...
 
-##Release Notes
+## Release Notes
 New in version 1.4.0
 - ADD support of percent string format (P to P6)
 
