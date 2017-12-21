@@ -1,4 +1,6 @@
-# WPF Currency/Numeric/Percent TextBox
+![example](Logo.png?raw=true)
+
+
 A WPF TextBox for entering a currency/numeric/percent value, similar to how a cash register works.
 
 ![example](CurrencyTextBoxSample.png?raw=true)
