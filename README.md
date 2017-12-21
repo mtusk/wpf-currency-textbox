@@ -1,12 +1,11 @@
 ![example](Logo.png?raw=true)
 
+[![NuGet](https://img.shields.io/badge/Nuget-1.4.3-brightgreen.svg)](https://www.nuget.org/packages/CurrencyTextBox/)
 
 A WPF TextBox for entering a currency/numeric/percent value, similar to how a cash register works.
 
+## ScreenShot
 ![example](CurrencyTextBoxSample.png?raw=true)
-
-## NUGET
-https://www.nuget.org/packages/CurrencyTextBox/
 
 ## Features
 - Numbers typed are pushed in from the right. If we start with the default value 0.00, and start typing the numbers 123, the value updates as such: 0.00 => 0.01 => 0.12 => 1.23
