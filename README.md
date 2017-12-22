@@ -8,7 +8,7 @@ A WPF TextBox for entering a currency/numeric/percent value, similar to how a ca
 
 ## You want to say thank or just like it ?
 
-Hexeditor control is totaly free and can be used in all project you want like open source and commercial applications. I make it in my free time and a few colaborators help me when they can... Please hit the ⭐️ button and I will be very happy ;) I accept help contribution...
+CurrencyTextBox control is totaly free and can be used in all project you want like open source and commercial applications. I make it in my free time and a fork from mtusk with a lot new of features... Please hit ⭐️ button if you like it and I will be very happy ;) I accept help contribution...
 
 ## Samples of use screenshot
 ![example](CurrencyTextBoxSample.png?raw=true)
