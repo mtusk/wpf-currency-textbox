@@ -4,11 +4,7 @@
 [![NetFramework](https://img.shields.io/badge/.Net%20Framework-4.5-green.svg)](https://www.microsoft.com/net/download/windows)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/abbaye/wpf-currency-textbox/blob/ExpendedFunctionality/LICENSE)
 
-A WPF TextBox for entering a currency/numeric/percent value, similar to how a cash register works.
-
-## You want to say thank or just like it ?
-
-CurrencyTextBox control is totaly free and can be used in all project you want like open source and commercial applications. I make it in my free time and it's a fork from mtusk with a lot new of features... Please hit ⭐️ button if you like it and I will be very happy ;) I accept help contribution...
+A Wpf TextBox for entering a currency/numeric/percent value, similar to how a cash register works.
 
 ## Samples of use screenshot
 ![example](CurrencyTextBoxSample.png?raw=true)
