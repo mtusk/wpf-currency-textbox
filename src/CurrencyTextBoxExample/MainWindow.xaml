@@ -4,13 +4,13 @@
         xmlns:currency="clr-namespace:CurrencyTextBoxControl;assembly=CurrencyTextBoxControl"
         x:Class="CurrencyTextBoxExample.MainWindow"
         Title="CurrencyTextBox Example"
-        Width="887"
+        Width="928.787"
         Height="381"
         FontFamily="Consolas"
         FontSize="18">
     <Grid x:Name="LayoutRoot" Margin="5">
 
-        <Grid Margin="10,46,0,0" HorizontalAlignment="Left" Width="730" Height="31" VerticalAlignment="Top" Background="#FFDEDEDE">
+        <StackPanel Margin="10,46,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FFDEDEDE" Orientation="Horizontal">
 
             <currency:CurrencyTextBox x:Name="myCurrencyTextBox"
 				VerticalAlignment="Center"
@@ -29,18 +29,31 @@
             </currency:CurrencyTextBox>
 
             <TextBlock
-				Grid.Column="0"
-				Margin="298,6,0,5"
+				Margin="5"
 				VerticalAlignment="Center"
 				Text="StringFormat:"
-				TextAlignment="Right" HorizontalAlignment="Left" Width="172" />
+				TextAlignment="Left" HorizontalAlignment="Left"/>
             <ComboBox
-				Margin="488,0,0,0"
-				HorizontalContentAlignment="Right"
+				Margin="5"
+				HorizontalContentAlignment="Left"
 				FontFamily="Consolas"
 				ItemsSource="{Binding StringFormats}"
 				SelectedItem="{Binding StringFormat, ElementName=myCurrencyTextBox, Mode=TwoWay}" HorizontalAlignment="Left" Width="177" Height="31" VerticalAlignment="Top" />
-        </Grid>
+
+            <TextBlock
+                Margin="5"
+                VerticalAlignment="Center"
+                Text="Culture:"
+                TextAlignment="Left" HorizontalAlignment="Left" />
+            <ComboBox
+                Margin="5"
+                HorizontalContentAlignment="Left"
+                FontFamily="Consolas"
+                ItemsSource="{Binding CultureInfos}"
+                SelectedItem="{Binding Culture, ElementName=myCurrencyTextBox, Mode=TwoWay}" HorizontalAlignment="Left" Width="177" Height="31" VerticalAlignment="Top"
+                DisplayMemberPath="{Binding EnglishName}"/>
+
+        </StackPanel>
         <Label x:Name="label" Content="DATA VALIDATION" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
         <Label x:Name="label_Copy" Content="MINIMUM/MAXIMUM VALUE" HorizontalAlignment="Left" Margin="10,82,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
         <Grid Margin="10,118,10,0" Height="30" VerticalAlignment="Top" Background="#FFDEDEDE">
