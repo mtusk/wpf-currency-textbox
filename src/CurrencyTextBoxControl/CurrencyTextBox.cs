@@ -12,10 +12,12 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 
 namespace CurrencyTextBoxControl
 {
+    [ContentProperty("Number")]
     public class CurrencyTextBox : TextBox
     {
         #region Global variables / Event
@@ -60,7 +62,8 @@ namespace CurrencyTextBoxControl
             DataObject.AddPastingHandler(this, CopyPasteEventHandler);
 
             //Events
-            CaretIndex = Text.Length;
+            CaretIndex = Text.LastIndexOfAny(new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' }) + 1;
+
             PreviewKeyDown += TextBox_PreviewKeyDown;
             PreviewMouseDown += TextBox_PreviewMouseDown;
             PreviewMouseUp += TextBox_PreviewMouseUp;
@@ -294,13 +297,14 @@ namespace CurrencyTextBoxControl
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var tb = sender as TextBox;
+            tb.CaretIndex = tb.Text.LastIndexOfAny(new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' }) + 1;
 
-            if (Number < 0 && tb.Text.EndsWith(")"))
-                tb.CaretIndex = tb.Text.Length - 1;
-            else if (tb.Text.EndsWith("%"))
-                tb.CaretIndex = tb.Text.Length - 2;
-            else
-                tb.CaretIndex = tb.Text.Length;
+            //if (Number < 0 && tb.Text.EndsWith(")"))
+            //    tb.CaretIndex = tb.Text.Length - 1;
+            //else if (tb.Text.EndsWith("%"))
+            //    tb.CaretIndex = tb.Text.Length - 2;
+            //else
+            //    tb.CaretIndex = tb.Text.Length;
         }
 
         private void TextBox_PreviewMouseDown(object sender, MouseButtonEventArgs e)

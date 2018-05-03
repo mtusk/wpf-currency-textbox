@@ -14,7 +14,7 @@ namespace CurrencyTextBoxExample
 
         public List<CultureInfo> CultureInfos
         {
-            get => CultureInfo.GetCultures(CultureTypes.AllCultures).OrderBy(x => x.DisplayName).ToList();
+            get => CultureInfo.GetCultures(CultureTypes.AllCultures).OrderBy(x => x.EnglishName).ToList();
         }
 
         private List<string> _stringFormats;
