@@ -933,6 +933,13 @@ namespace CurrencyTextBoxControl
                     IsOpen = true
                 };
 
+                //Set object properties                                         
+                ctbPopup.NumberChanged += Ctb_NumberChanged;
+                ctbPopup.PopupClosed += CtbPopup_PopupClosed;
+
+                _numberBeforePopup = Number;
+                _popupLabel = new Label { Content = "+" };
+
                 //ColumnDefinition
                 var c1 = new ColumnDefinition {Width = new GridLength(20, GridUnitType.Auto)};
                 var c2 = new ColumnDefinition {Width = new GridLength(80, GridUnitType.Star)};
@@ -940,13 +947,6 @@ namespace CurrencyTextBoxControl
                 grid.ColumnDefinitions.Add(c2);
                 Grid.SetColumn(_popupLabel, 0);
                 Grid.SetColumn(ctbPopup, 1);
-
-                //Set object properties                                         
-                ctbPopup.NumberChanged += Ctb_NumberChanged;
-                ctbPopup.PopupClosed += CtbPopup_PopupClosed;
-
-                _numberBeforePopup = Number;
-                _popupLabel = new Label { Content = "+" };
 
                 //Add object 
                 grid.Children.Add(_popupLabel);
