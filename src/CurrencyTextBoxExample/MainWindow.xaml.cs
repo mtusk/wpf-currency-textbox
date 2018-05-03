@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
 using System.Windows;
 
 namespace CurrencyTextBoxExample
@@ -7,6 +9,13 @@ namespace CurrencyTextBoxExample
     public partial class MainWindow : IDataErrorInfo
     {
         public decimal Number { get; set; } = 1.23M;
+
+        private List<CultureInfo> _cultureInfos;
+
+        public List<CultureInfo> CultureInfos
+        {
+            get => CultureInfo.GetCultures(CultureTypes.AllCultures).OrderBy(x => x.DisplayName).ToList();
+        }
 
         private List<string> _stringFormats;
         public List<string> StringFormats

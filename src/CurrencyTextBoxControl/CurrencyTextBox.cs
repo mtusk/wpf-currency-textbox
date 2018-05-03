@@ -25,7 +25,7 @@ namespace CurrencyTextBoxControl
         private Popup _popup;
         private Label _popupLabel;
         private decimal _numberBeforePopup;
-       
+
         //Event
         public event EventHandler PopupClosed;
         public event EventHandler NumberChanged;
@@ -49,7 +49,8 @@ namespace CurrencyTextBoxControl
                 Path = new PropertyPath("Number"),
                 RelativeSource = new RelativeSource(RelativeSourceMode.Self),
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                StringFormat = StringFormat
+                StringFormat = StringFormat,
+                ConverterCulture = Culture
             };
 
             BindingOperations.SetBinding(this, TextProperty, textBinding);
@@ -73,6 +74,29 @@ namespace CurrencyTextBoxControl
 
         #region Dependency Properties
 
+        public static readonly DependencyProperty CultureProperty = DependencyProperty.Register(
+            nameof(Culture), typeof(CultureInfo), typeof(CurrencyTextBox), new PropertyMetadata(CultureInfo.CurrentCulture, CulturePropertyChanged));
+
+        private static void CulturePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var textBinding = new Binding
+            {
+                Path = new PropertyPath("Number"),
+                RelativeSource = new RelativeSource(RelativeSourceMode.Self),
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                StringFormat = (string)d.GetValue(StringFormatProperty),
+                ConverterCulture = (CultureInfo)e.NewValue
+            };
+
+            BindingOperations.SetBinding(d, TextProperty, textBinding);
+        }
+
+        public CultureInfo Culture
+        {
+            get => (CultureInfo)GetValue(CultureProperty);
+            set => SetValue(CultureProperty, value);
+        }
+
         public static readonly DependencyProperty NumberProperty = DependencyProperty.Register(
             nameof(Number), typeof(decimal), typeof(CurrencyTextBox),
             new FrameworkPropertyMetadata(0M, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
@@ -84,7 +108,7 @@ namespace CurrencyTextBoxControl
         {
             if (d is CurrencyTextBox ctb)
             {
-                var value = (decimal) baseValue;
+                var value = (decimal)baseValue;
 
                 //Check maximum value
                 if (value > ctb.MaximumValue && ctb.MaximumValue > 0)
@@ -120,7 +144,7 @@ namespace CurrencyTextBoxControl
         public static readonly DependencyProperty IsNegativeProperty =
             DependencyProperty.Register(nameof(IsNegative), typeof(bool), typeof(CurrencyTextBox), new PropertyMetadata(false));
 
-        public bool IsNegative => (bool) GetValue(IsNegativeProperty);
+        public bool IsNegative => (bool)GetValue(IsNegativeProperty);
 
         public bool IsCalculPanelMode
         {
@@ -131,13 +155,13 @@ namespace CurrencyTextBoxControl
         // Using a DependencyProperty as the backing store for IsCalculPanelMode.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsCalculPanelModeProperty =
             DependencyProperty.Register(nameof(IsCalculPanelMode), typeof(bool), typeof(CurrencyTextBox), new PropertyMetadata(false));
-        
+
         public bool CanShowAddPanel
         {
             get => (bool)GetValue(CanShowAddPanelProperty);
             set => SetValue(CanShowAddPanelProperty, value);
         }
-        
+
         /// <summary>
         /// Set for enabling the calcul panel
         /// </summary>
@@ -213,7 +237,7 @@ namespace CurrencyTextBoxControl
             nameof(StringFormat), typeof(string), typeof(CurrencyTextBox),
             new FrameworkPropertyMetadata("C2", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                 StringFormatPropertyChanged, StringFormatCoerceValue), StringFormatValidateValue);
-        
+
         private static object StringFormatCoerceValue(DependencyObject d, object baseValue)
         {
             return ((string)baseValue).ToUpper();
@@ -245,12 +269,13 @@ namespace CurrencyTextBoxControl
                 Path = new PropertyPath("Number"),
                 RelativeSource = new RelativeSource(RelativeSourceMode.Self),
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                StringFormat = (string)e.NewValue
+                StringFormat = (string)e.NewValue,
+                ConverterCulture = (CultureInfo)obj.GetValue(CultureProperty)
             };
 
             BindingOperations.SetBinding(obj, TextProperty, textBinding);
         }
-        
+
         public int UpDownRepeat
         {
             get => (int)GetValue(UpDownRepeatProperty);
@@ -262,9 +287,9 @@ namespace CurrencyTextBoxControl
         /// </summary>
         public static readonly DependencyProperty UpDownRepeatProperty =
             DependencyProperty.Register(nameof(UpDownRepeat), typeof(int), typeof(CurrencyTextBox), new PropertyMetadata(10));
-        
+
         #endregion Dependency Properties
-        
+
         #region Events
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -433,7 +458,7 @@ namespace CurrencyTextBoxControl
         private void InsertKey(Key key)
         {
             //Max length fix
-            if (MaxLength != 0 && Number.ToString(CultureInfo.CurrentCulture).Length > MaxLength)
+            if (MaxLength != 0 && Number.ToString(Culture).Length > MaxLength)
                 return;
 
             try
@@ -560,29 +585,17 @@ namespace CurrencyTextBoxControl
         /// </summary>
         private int GetDigitCount()
         {
-            switch (GetBindingExpression(TextProperty).ParentBinding.StringFormat)
-            {
-                case "N0":
-                case "C0": return 0;
-                case "N":
-                case "C": return 2;
-                case "N1":
-                case "C1": return 1;
-                case "N2":
-                case "C2": return 2;
-                case "N3":
-                case "C3": return 3;
-                case "N4":
-                case "C4": return 4;
-                case "N5":
-                case "C5": return 5;
-                case "N6":
-                case "C6": return 6;
-            }
+            if (string.IsNullOrEmpty(StringFormat)) return 1;
+            if (string.Equals("N", StringFormat, StringComparison.OrdinalIgnoreCase)) return 2;
+            if (string.Equals("C", StringFormat, StringComparison.OrdinalIgnoreCase)) return 2;
+
+            var s = StringFormat.Substring(StringFormat.Length - 1, 1);
+            int resp;
+            if (int.TryParse(s, NumberStyles.Integer, Culture, out resp)) return resp;
 
             return 1;
         }
-        
+
         /// <summary>
         /// Delete the right digit of number property
         /// </summary>
@@ -590,14 +603,22 @@ namespace CurrencyTextBoxControl
         {
             try
             {
-                //Fix the number then dont have a comma
-                if (Number.ToString(CultureInfo.CurrentCulture).LastIndexOf(",", StringComparison.Ordinal) == -1)
-                    Number = Convert.ToDecimal(Number + GetNumberAdjuster());
+                bool isNegative = Number < 0;
+                var digitCount = GetDigitCount();
+                string decimalSeparator = !string.IsNullOrEmpty(StringFormat) && StringFormat.StartsWith("C", StringComparison.OrdinalIgnoreCase)
+                                           ? Culture.NumberFormat.CurrencyDecimalSeparator : Culture.NumberFormat.NumberDecimalSeparator;
 
-                //Remove the right most digit after is fixed
-                var numberstring = Number.ToString(CultureInfo.CurrentCulture).Replace(",", "");
-                numberstring = numberstring.Insert(numberstring.Length - GetSubstract(), ",");
-                Number = Convert.ToDecimal(numberstring.Remove(numberstring.Length - 1));
+                string numberString = Math.Abs(Number).ToString("#.###########", Culture);
+                numberString = numberString.Substring(0, numberString.Length - 1);
+                numberString = numberString.Replace(decimalSeparator, string.Empty);
+                numberString = numberString.PadLeft(digitCount + 1, '0');
+
+                numberString = (isNegative ? Culture.NumberFormat.NegativeSign : string.Empty) +
+                               numberString.Substring(0, numberString.Length - digitCount) +
+                               Culture.NumberFormat.NumberDecimalSeparator +
+                               numberString.Substring(numberString.Length - digitCount);
+
+                Number = Convert.ToDecimal(numberString, Culture);
             }
             catch
             {
@@ -617,19 +638,19 @@ namespace CurrencyTextBoxControl
                 case "N0":
                 case "C0": return "";
                 case "N":
-                case "C": return ",00";
+                case "C": return Culture.NumberFormat.CurrencyGroupSeparator + "00";
                 case "N1":
-                case "C1": return ",0";
+                case "C1": return Culture.NumberFormat.CurrencyGroupSeparator + "0";
                 case "N2":
-                case "C2": return ",00";
+                case "C2": return Culture.NumberFormat.CurrencyGroupSeparator + "00";
                 case "N3":
-                case "C3": return ",000";
+                case "C3": return Culture.NumberFormat.CurrencyGroupSeparator + "000";
                 case "N4":
-                case "C4": return ",0000";
+                case "C4": return Culture.NumberFormat.CurrencyGroupSeparator + "0000";
                 case "N5":
-                case "C5": return ",00000";
+                case "C5": return Culture.NumberFormat.CurrencyGroupSeparator + "00000";
                 case "N6":
-                case "C6": return ",000000";
+                case "C6": return Culture.NumberFormat.CurrencyGroupSeparator + "000000";
             }
 
             return "";
@@ -644,8 +665,8 @@ namespace CurrencyTextBoxControl
         private void AddUndoInList(decimal number, bool clearRedo = true)
         {
             //Clear first item when undolimit is reach
-            if (_undoList.Count == UndoLimit)  
-                _undoList.RemoveRange(0, 1);            
+            if (_undoList.Count == UndoLimit)
+                _undoList.RemoveRange(0, 1);
 
             //Add item to undo list
             _undoList.Add(number);
@@ -869,14 +890,14 @@ namespace CurrencyTextBoxControl
             try
             {
                 switch (GetBindingExpression(TextProperty).ParentBinding.StringFormat)
-                {                    
-                    case "P0": 
-                    case "P": 
-                    case "P1": 
-                    case "P2": 
-                    case "P3": 
-                    case "P4": 
-                    case "P5": 
+                {
+                    case "P0":
+                    case "P":
+                    case "P1":
+                    case "P2":
+                    case "P3":
+                    case "P4":
+                    case "P5":
                     case "P6":
                         Number = decimal.Parse(Clipboard.GetText());
                         break;
@@ -884,7 +905,7 @@ namespace CurrencyTextBoxControl
                         Number = Math.Round(decimal.Parse(Clipboard.GetText()), GetDigitCount());
                         break;
                 }
-                
+
             }
             catch
             {
@@ -898,7 +919,7 @@ namespace CurrencyTextBoxControl
         private void CopyToClipBoard()
         {
             Clipboard.Clear();
-            Clipboard.SetText(Number.ToString(CultureInfo.CurrentCulture));
+            Clipboard.SetText(Number.ToString(Culture));
         }
         #endregion Clipboard
 
@@ -911,7 +932,7 @@ namespace CurrencyTextBoxControl
             if (CanShowAddPanel)
             {
                 //Initialize somes Child object
-                var grid = new Grid {Background = Brushes.White};
+                var grid = new Grid { Background = Brushes.White };
 
                 var ctbPopup = new CurrencyTextBox
                 {
@@ -941,8 +962,8 @@ namespace CurrencyTextBoxControl
                 _popupLabel = new Label { Content = "+" };
 
                 //ColumnDefinition
-                var c1 = new ColumnDefinition {Width = new GridLength(20, GridUnitType.Auto)};
-                var c2 = new ColumnDefinition {Width = new GridLength(80, GridUnitType.Star)};
+                var c1 = new ColumnDefinition { Width = new GridLength(20, GridUnitType.Auto) };
+                var c2 = new ColumnDefinition { Width = new GridLength(80, GridUnitType.Star) };
                 grid.ColumnDefinitions.Add(c1);
                 grid.ColumnDefinitions.Add(c2);
                 Grid.SetColumn(_popupLabel, 0);
