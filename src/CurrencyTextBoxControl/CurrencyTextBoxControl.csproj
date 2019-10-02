@@ -7,6 +7,13 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon />
     <StartupObject />
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>CurrencyTextBox</PackageId>
+    <Version>1.4.4</Version>
+    <PackageReleaseNotes>NET Core 3.0 support</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/abbaye/wpf-currency-textbox</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors>Derek Tremblay</Authors>
   </PropertyGroup>
 
   <ItemGroup>
