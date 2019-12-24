@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.0;net45;net47</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>CurrencyTextbox</RootNamespace>
+    <AssemblyName>CurrencyTextbox</AssemblyName>
+    <Title>CurrencyTextbox user control</Title>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Derek Tremblay (derektremblay666@gmail.com)</Authors>
+    <Company>Derek Tremblay (derektremblay666@gmail.com)</Company>
+    <Description>
+      .NET FRAMEWORK 4.5/4.7 AND .NET CORE 3.0
+      A WPF TextBox for entering a Currency/Numeric/Percent value, similar to how a cash register works.
+      Numbers typed are pushed in from the right.
+    </Description>
+    <PackageIconUrl />
+    <Product>CurrencyTextbox</Product>
+    <Copyright>MIT</Copyright>
+    <AssemblyVersion>2.0.2.0</AssemblyVersion>
+    <FileVersion>2.0.2.0</FileVersion>
+    <Version>2.0.2</Version>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <PackageTags>wpf-controls;currency;user-interface</PackageTags>
+    <ApplicationIcon />
+    <LangVersion>preview</LangVersion>
+    <PackageProjectUrl>https://github.com/abbaye/WpfCurrencyTextbox</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.0|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="license.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup> 
+</Project>
