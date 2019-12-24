@@ -1,7 +1,7 @@
 ﻿// Fork from mtusk CurrencyTextBox
 // https://github.com/mtusk/wpf-currency-textbox
 // 
-// Fork 2016-2017 by Derek Tremblay (Abbaye) 
+// Fork 2016-2019 by Derek Tremblay (Abbaye) 
 // derektremblay666@gmail.com
 
 using System;
@@ -34,12 +34,10 @@ namespace CurrencyTextBoxControl
         #endregion Global variables
 
         #region Constructor
-        static CurrencyTextBox()
-        {
+        static CurrencyTextBox() => 
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(CurrencyTextBox),
-                new FrameworkPropertyMetadata(typeof(CurrencyTextBox)));
-        }
+                    new FrameworkPropertyMetadata(typeof(CurrencyTextBox)));
 
         public override void OnApplyTemplate()
         {
@@ -48,7 +46,7 @@ namespace CurrencyTextBoxControl
             // Bind Text to Number with the specified StringFormat
             var textBinding = new Binding
             {
-                Path = new PropertyPath("Number"),
+                Path = new PropertyPath(nameof(Number)),
                 RelativeSource = new RelativeSource(RelativeSourceMode.Self),
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
                 StringFormat = StringFormat,
@@ -72,13 +70,22 @@ namespace CurrencyTextBoxControl
             //Disable contextmenu
             ContextMenu = null;
 
+            //Set Touch Keyboard to Numeric Pad - pbrombach@gmail.com 24-12-2019
+            InputScope scope = new InputScope();
+            scope.Names.Add(new InputScopeName
+            {
+                NameValue = InputScopeNameValue.Number
+            });
+            InputScope = scope;
+
         }
         #endregion Constructor
 
         #region Dependency Properties
 
         public static readonly DependencyProperty CultureProperty = DependencyProperty.Register(
-            nameof(Culture), typeof(CultureInfo), typeof(CurrencyTextBox), new PropertyMetadata(CultureInfo.CurrentCulture, CulturePropertyChanged));
+            nameof(Culture), typeof(CultureInfo), typeof(CurrencyTextBox), 
+                new PropertyMetadata(CultureInfo.CurrentCulture, CulturePropertyChanged));
 
         private static void CulturePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -102,40 +109,36 @@ namespace CurrencyTextBoxControl
 
         public static readonly DependencyProperty NumberProperty = DependencyProperty.Register(
             nameof(Number), typeof(decimal), typeof(CurrencyTextBox),
-            new FrameworkPropertyMetadata(0M, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                NumberPropertyChanged, NumberPropertyCoerceValue), NumberPropertyValidated);
+                new FrameworkPropertyMetadata(0M, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                    NumberPropertyChanged, NumberPropertyCoerceValue), NumberPropertyValidated);
 
         private static bool NumberPropertyValidated(object value) => value is decimal;
 
         private static object NumberPropertyCoerceValue(DependencyObject d, object baseValue)
         {
-            if (d is CurrencyTextBox ctb)
-            {
-                var value = (decimal)baseValue;
+            if (!(d is CurrencyTextBox ctb)) return baseValue;
+            
+            var value = (decimal)baseValue;
 
-                //Check maximum value
-                if (value > ctb.MaximumValue && ctb.MaximumValue > 0)
-                    return ctb.MaximumValue;
+            //Check maximum value
+            if (value > ctb.MaximumValue && ctb.MaximumValue > 0)
+                return ctb.MaximumValue;
 
-                if (value < ctb.MinimumValue && ctb.MinimumValue < 0)
-                    return ctb.MinimumValue;
+            if (value < ctb.MinimumValue && ctb.MinimumValue < 0)
+                return ctb.MinimumValue;
 
-                return value;
-            }
-
-            return baseValue;
+            return value;
         }
 
         private static void NumberPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is CurrencyTextBox ctb)
-            {
-                //Update IsNegative
-                ctb.SetValue(IsNegativeProperty, ctb.Number < 0);
+            if (!(d is CurrencyTextBox ctb)) return;
 
-                //Launch event
-                ctb.NumberChanged?.Invoke(ctb, new EventArgs());
-            }
+            //Update IsNegative
+            ctb.SetValue(IsNegativeProperty, ctb.Number < 0);
+
+            //Launch event
+            ctb.NumberChanged?.Invoke(ctb, new EventArgs());
         }
 
         public decimal Number
@@ -213,10 +216,8 @@ namespace CurrencyTextBoxControl
                 new FrameworkPropertyMetadata(0M, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                     MinimumValuePropertyChanged, MinimumCoerceValue), MinimumValidateValue);
 
-        private static bool MinimumValidateValue(object value)
-        {
-            return (decimal)value >= decimal.MinValue / 2; //&& (decimal)value <= 0;
-        }
+        private static bool MinimumValidateValue(object value) =>
+            (decimal)value >= decimal.MinValue / 2; //&& (decimal)value <= 0;
 
         private static object MinimumCoerceValue(DependencyObject d, object baseValue)
         {
@@ -241,10 +242,8 @@ namespace CurrencyTextBoxControl
             new FrameworkPropertyMetadata("C2", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                 StringFormatPropertyChanged, StringFormatCoerceValue), StringFormatValidateValue);
 
-        private static object StringFormatCoerceValue(DependencyObject d, object baseValue)
-        {
-            return ((string)baseValue).ToUpper();
-        }
+        private static object StringFormatCoerceValue(DependencyObject d, object baseValue) =>
+            ((string)baseValue).ToUpper();
 
         /// <summary>
         /// Validate the StringFormat
@@ -292,6 +291,14 @@ namespace CurrencyTextBoxControl
             DependencyProperty.Register(nameof(UpDownRepeat), typeof(int), typeof(CurrencyTextBox), new PropertyMetadata(10));
 
         #endregion Dependency Properties
+
+
+        public void Insert(Key K)
+        {
+            AddUndoInList(Number);
+            InsertKey(K);
+        }
+
 
         #region Events
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -514,7 +521,6 @@ namespace CurrencyTextBoxControl
         /// <summary>
         /// Get a decimal for adjust digit when a key was inserted
         /// </summary>
-        /// <returns></returns>
         private decimal GetDivider()
         {
             switch (GetBindingExpression(TextProperty).ParentBinding.StringFormat)
@@ -543,45 +549,8 @@ namespace CurrencyTextBoxControl
                 case "P4": return 1000000M;
                 case "P5": return 10000000M;
                 case "P6": return 100000000M;
+                default: return 1M;
             }
-
-            return 1M;
-        }
-
-        /// <summary>
-        /// Get substract number for adjust comma in RemoveRightMostDigit
-        /// </summary>
-        private int GetSubstract()
-        {
-            switch (GetBindingExpression(TextProperty).ParentBinding.StringFormat)
-            {
-                case "P0": return 3;
-                case "N0":
-                case "C0": return 1;
-                case "P": return 5;
-                case "N":
-                case "C": return 3;
-                case "P1": return 4;
-                case "N1":
-                case "C1": return 2;
-                case "P2": return 5;
-                case "N2":
-                case "C2": return 3;
-                case "P3": return 6;
-                case "N3":
-                case "C3": return 4;
-                case "P4": return 7;
-                case "N4":
-                case "C4": return 5;
-                case "P5": return 8;
-                case "N5":
-                case "C5": return 6;
-                case "P6": return 9;
-                case "N6":
-                case "C6": return 7;
-            }
-
-            return 1;
         }
 
         /// <summary>
@@ -629,36 +598,6 @@ namespace CurrencyTextBoxControl
                 Clear();
             }
         }
-
-        /// <summary>
-        /// Get number adjuster to fix when you delete right most digit
-        /// Not used with percent stringformat
-        /// </summary>
-        /// <returns></returns>
-        private string GetNumberAdjuster()
-        {
-            switch (GetBindingExpression(TextProperty).ParentBinding.StringFormat)
-            {
-                case "N0":
-                case "C0": return "";
-                case "N":
-                case "C": return Culture.NumberFormat.CurrencyGroupSeparator + "00";
-                case "N1":
-                case "C1": return Culture.NumberFormat.CurrencyGroupSeparator + "0";
-                case "N2":
-                case "C2": return Culture.NumberFormat.CurrencyGroupSeparator + "00";
-                case "N3":
-                case "C3": return Culture.NumberFormat.CurrencyGroupSeparator + "000";
-                case "N4":
-                case "C4": return Culture.NumberFormat.CurrencyGroupSeparator + "0000";
-                case "N5":
-                case "C5": return Culture.NumberFormat.CurrencyGroupSeparator + "00000";
-                case "N6":
-                case "C6": return Culture.NumberFormat.CurrencyGroupSeparator + "000000";
-            }
-
-            return "";
-        }
         #endregion Privates methodes
 
         #region Undo/Redo 
@@ -685,13 +624,12 @@ namespace CurrencyTextBoxControl
         /// </summary>
         public new void Undo()
         {
-            if (CanUndo())
-            {
-                Number = _undoList[_undoList.Count - 1];
+            if (!CanUndo()) return;
 
-                _redoList.Add(_undoList[_undoList.Count - 1]);
-                _undoList.RemoveAt(_undoList.Count - 1);
-            }
+            Number = _undoList[_undoList.Count - 1];
+
+            _redoList.Add(_undoList[_undoList.Count - 1]);
+            _undoList.RemoveAt(_undoList.Count - 1);
         }
 
         /// <summary>
@@ -699,12 +637,11 @@ namespace CurrencyTextBoxControl
         /// </summary>
         public new void Redo()
         {
-            if (_redoList.Count > 0)
-            {
-                AddUndoInList(Number, false);
-                Number = _redoList[_redoList.Count - 1];
-                _redoList.RemoveAt(_redoList.Count - 1);
-            }
+            if (_redoList.Count <= 0) return;
+            
+            AddUndoInList(Number, false);
+            Number = _redoList[_redoList.Count - 1];
+            _redoList.RemoveAt(_redoList.Count - 1);
         }
 
         /// <summary>
@@ -909,7 +846,6 @@ namespace CurrencyTextBoxControl
                         Number = Math.Round(decimal.Parse(Clipboard.GetText()), GetDigitCount());
                         break;
                 }
-
             }
             catch
             {
@@ -933,52 +869,51 @@ namespace CurrencyTextBoxControl
         /// </summary>
         private void ShowAddPopup()
         {
-            if (CanShowAddPanel)
+            if (!CanShowAddPanel) return;
+
+            //Initialize somes Child object
+            var grid = new Grid { Background = Brushes.White };
+
+            var ctbPopup = new CurrencyTextBox
             {
-                //Initialize somes Child object
-                var grid = new Grid { Background = Brushes.White };
+                CanShowAddPanel = false,
+                IsCalculPanelMode = true,
+                StringFormat = StringFormat,
+                Background = Brushes.WhiteSmoke
+            };
 
-                var ctbPopup = new CurrencyTextBox
-                {
-                    CanShowAddPanel = false,
-                    IsCalculPanelMode = true,
-                    StringFormat = StringFormat,
-                    Background = Brushes.WhiteSmoke
-                };
+            _popup = new Popup
+            {
+                Width = ActualWidth,
+                Height = 32,
+                PopupAnimation = PopupAnimation.Fade,
+                Placement = PlacementMode.Bottom,
+                PlacementTarget = this,
+                StaysOpen = false,
+                Child = grid,
+                IsOpen = true
+            };
 
-                _popup = new Popup
-                {
-                    Width = ActualWidth,
-                    Height = 32,
-                    PopupAnimation = PopupAnimation.Fade,
-                    Placement = PlacementMode.Bottom,
-                    PlacementTarget = this,
-                    StaysOpen = false,
-                    Child = grid,
-                    IsOpen = true
-                };
+            //Set object properties                                         
+            ctbPopup.NumberChanged += Ctb_NumberChanged;
+            ctbPopup.PopupClosed += CtbPopup_PopupClosed;
 
-                //Set object properties                                         
-                ctbPopup.NumberChanged += Ctb_NumberChanged;
-                ctbPopup.PopupClosed += CtbPopup_PopupClosed;
+            _numberBeforePopup = Number;
+            _popupLabel = new Label { Content = "+" };
 
-                _numberBeforePopup = Number;
-                _popupLabel = new Label { Content = "+" };
+            //ColumnDefinition
+            var c1 = new ColumnDefinition { Width = new GridLength(20, GridUnitType.Auto) };
+            var c2 = new ColumnDefinition { Width = new GridLength(80, GridUnitType.Star) };
+            grid.ColumnDefinitions.Add(c1);
+            grid.ColumnDefinitions.Add(c2);
+            Grid.SetColumn(_popupLabel, 0);
+            Grid.SetColumn(ctbPopup, 1);
 
-                //ColumnDefinition
-                var c1 = new ColumnDefinition { Width = new GridLength(20, GridUnitType.Auto) };
-                var c2 = new ColumnDefinition { Width = new GridLength(80, GridUnitType.Star) };
-                grid.ColumnDefinitions.Add(c1);
-                grid.ColumnDefinitions.Add(c2);
-                Grid.SetColumn(_popupLabel, 0);
-                Grid.SetColumn(ctbPopup, 1);
+            //Add object 
+            grid.Children.Add(_popupLabel);
+            grid.Children.Add(ctbPopup);
 
-                //Add object 
-                grid.Children.Add(_popupLabel);
-                grid.Children.Add(ctbPopup);
-
-                ctbPopup.Focus();
-            }
+            ctbPopup.Focus();
         }
 
         private void CtbPopup_PopupClosed(object sender, EventArgs e) => Focus();
