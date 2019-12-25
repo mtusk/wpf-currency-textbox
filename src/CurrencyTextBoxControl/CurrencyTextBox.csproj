@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0;net45;net47</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;net40;net45;net47</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <RootNamespace>CurrencyTextbox</RootNamespace>
     <AssemblyName>CurrencyTextbox</AssemblyName>
